@@ -154,7 +154,22 @@ const api = {
     if (!response.ok) throw new Error('Failed to fetch settlements');
     return response.json();
   },
-  
+  // Add to api object in services/api.js
+changePassword: async (currentPassword, newPassword, confirmPassword) => {
+  const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${getToken()}`
+    },
+    body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Failed to change password');
+  }
+  return response.json();
+},
   confirmSettlement: async (id) => {
     const response = await fetch(`${API_BASE_URL}/settlements/${id}/confirm`, {
       method: 'PUT',

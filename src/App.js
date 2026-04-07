@@ -9,6 +9,7 @@ import BalanceView from './components/BalanceView';
 import SettlementList from './components/SettlementList';
 import MealHistory from './components/MealHistory';
 import api from './services/api';
+import ChangePassword from './components/ChangePassword';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -17,6 +18,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('groups');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [friends, setFriends] = useState([]);
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -54,8 +56,14 @@ function App() {
       <header className="header">
         <h1>🍽️ Meal Share Tracker</h1>
         <p>Track meals with friends, split bills easily</p>
-        <div style={{ marginTop: '10px' }}>
-          <span style={{ marginRight: '15px' }}>Welcome, {user?.name}!</span>
+        <div style={{ marginTop: '10px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <span style={{ marginRight: '5px' }}>Welcome, {user?.name}!</span>
+          <button 
+            onClick={() => setShowChangePassword(true)} 
+            style={{ background: '#10b981', padding: '5px 15px' }}
+          >
+            🔒 Change Password
+          </button>
           <button onClick={handleLogout} style={{ background: '#ef4444', padding: '5px 15px' }}>
             Logout
           </button>
@@ -68,12 +76,11 @@ function App() {
         </div>
       ) : (
         <>
-          <div style={{ padding: '10px 20px', background: '#f0f0f0', marginBottom: '20px', borderRadius: '8px' }}>
-            <button onClick={() => setSelectedGroupId(null)} style={{ background: '#6c757d', marginRight: '10px' }}>
+          <div className="group-header">
+            <button onClick={() => setSelectedGroupId(null)} className="back-button">
               ← Back to Groups
             </button>
-            <span style={{ fontWeight: 'bold' }}>Current Group: </span>
-            <span>Group #{selectedGroupId}</span>
+            <span className="group-header-text">Current Group: Group #{selectedGroupId}</span>
           </div>
 
           <div className="tabs">
@@ -99,11 +106,11 @@ function App() {
               <GroupMembers groupId={selectedGroupId} onMemberChange={refreshData} />
             )}
             {activeTab === 'add' && (
-  <AddMeal 
-    groupId={selectedGroupId}
-    onMealAdded={refreshData}
-  />
-)}
+              <AddMeal 
+                groupId={selectedGroupId}
+                onMealAdded={refreshData}
+              />
+            )}
             {activeTab === 'balance' && (
               <BalanceView 
                 groupId={selectedGroupId}
@@ -123,6 +130,17 @@ function App() {
             )}
           </div>
         </>
+      )}
+
+      {/* Change Password Modal */}
+      {showChangePassword && (
+        <ChangePassword 
+          onClose={() => setShowChangePassword(false)}
+          onPasswordChanged={() => {
+            // Optional: handle any post-change logic
+            console.log('Password changed successfully');
+          }}
+        />
       )}
     </div>
   );
