@@ -5,6 +5,22 @@ function GroupMembers({ groupId, onMemberChange }) {
   const [members, setMembers] = useState([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
+  const [ownerId, setOwnerId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    // Get current user from localStorage
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setCurrentUser(user);
+      } catch (e) {
+        console.error('Error parsing user:', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (groupId) {
@@ -15,7 +31,9 @@ function GroupMembers({ groupId, onMemberChange }) {
   const loadMembers = async () => {
     try {
       const data = await api.getGroupMembers(groupId);
-      setMembers(data);
+      setMembers(data.members || []);
+      setIsOwner(data.isOwner || false);
+      setOwnerId(data.ownerId);
     } catch (error) {
       console.error('Error loading members:', error);
     }
@@ -24,6 +42,11 @@ function GroupMembers({ groupId, onMemberChange }) {
   const addMember = async () => {
     if (!inviteEmail.trim()) {
       alert('Please enter an email address');
+      return;
+    }
+    
+    if (!isOwner) {
+      alert('Only the group owner can add members');
       return;
     }
     
@@ -41,6 +64,11 @@ function GroupMembers({ groupId, onMemberChange }) {
   };
 
   const removeMember = async (memberId, memberName) => {
+    if (!isOwner) {
+      alert('Only the group owner can remove members');
+      return;
+    }
+    
     if (window.confirm(`Remove ${memberName} from this group?`)) {
       try {
         await api.removeGroupMember(groupId, memberId);
@@ -60,28 +88,38 @@ function GroupMembers({ groupId, onMemberChange }) {
     <div>
       <h2>Group Members</h2>
       
-      <div className="add-member-section">
-        <div className="add-member-title">
-          <span>👥</span> Add New Member
+      {!isOwner && (
+        <div className="card" style={{ background: '#fef3c7', borderLeft: '4px solid #f59e0b', marginBottom: '20px' }}>
+          <p style={{ margin: 0 }}>
+            ℹ️ You are a member of this group. Only the group owner can add or remove members.
+          </p>
         </div>
-        <div className="add-member-input-group">
-          <input
-            type="email"
-            placeholder="Enter email to invite"
-            value={inviteEmail}
-            onChange={(e) => setInviteEmail(e.target.value)}
-            className="add-member-input"
-            onKeyPress={(e) => e.key === 'Enter' && addMember()}
-          />
-          <button 
-            onClick={addMember} 
-            disabled={loading} 
-            className="add-member-btn"
-          >
-            {loading ? 'Adding...' : '+ Add Member'}
-          </button>
+      )}
+      
+      {isOwner && (
+        <div className="add-member-section">
+          <div className="add-member-title">
+            <span>👥</span> Add New Member
+          </div>
+          <div className="add-member-input-group">
+            <input
+              type="email"
+              placeholder="Enter email to invite"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              className="add-member-input"
+              onKeyPress={(e) => e.key === 'Enter' && addMember()}
+            />
+            <button 
+              onClick={addMember} 
+              disabled={loading} 
+              className="add-member-btn"
+            >
+              {loading ? 'Adding...' : '+ Add Member'}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
       
       <div className="member-list">
         <h3>Current Members ({members.length})</h3>
@@ -90,20 +128,43 @@ function GroupMembers({ groupId, onMemberChange }) {
             <p>No members yet. Invite someone to join!</p>
           </div>
         ) : (
-          members.map(member => (
-            <div key={member.id} className="member-card">
-              <div className="member-info">
-                <div className="member-name">{member.member_name}</div>
-                <div className="member-email">{member.email}</div>
+          members.map(member => {
+            const isGroupOwner = member.is_owner || member.user_id === ownerId;
+            
+            return (
+              <div key={member.id} className="member-card">
+                <div className="member-info">
+                  <div className="member-name">
+                    {member.member_name}
+                    {isGroupOwner && (
+                      <span style={{ 
+                        fontSize: '0.7em', 
+                        background: '#10b981', 
+                        color: 'white', 
+                        padding: '2px 8px', 
+                        borderRadius: '12px',
+                        marginLeft: '10px'
+                      }}>
+                        Owner
+                      </span>
+                    )}
+                  </div>
+                  <div className="member-email">{member.email}</div>
+                </div>
+                {isOwner && !isGroupOwner && (
+                  <button 
+                    onClick={() => removeMember(member.user_id, member.member_name)}
+                    className="remove-btn"
+                  >
+                    Remove
+                  </button>
+                )}
+                {!isOwner && isGroupOwner && (
+                  <span style={{ fontSize: '0.8em', color: '#666' }}>Group Owner</span>
+                )}
               </div>
-              <button 
-                onClick={() => removeMember(member.user_id, member.member_name)}
-                className="remove-btn"
-              >
-                Remove
-              </button>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>

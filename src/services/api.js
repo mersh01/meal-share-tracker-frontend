@@ -55,13 +55,15 @@ const api = {
     return response.json();
   },
 
-  getGroupMembers: async (groupId) => {
-    const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {
-      headers: { 'Authorization': `Bearer ${getToken()}` }
-    });
-    if (!response.ok) throw new Error('Failed to fetch members');
-    return response.json();
-  },
+  // Update getGroupMembers to handle the new response
+getGroupMembers: async (groupId) => {
+  const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {
+    headers: { 'Authorization': `Bearer ${getToken()}` }
+  });
+  if (!response.ok) throw new Error('Failed to fetch members');
+  const data = await response.json();
+  return data; // Returns { members: [], isOwner: boolean, ownerId: number }
+},
 
   addGroupMember: async (groupId, email) => {
     const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {

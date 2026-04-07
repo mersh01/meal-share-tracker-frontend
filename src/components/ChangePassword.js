@@ -19,8 +19,8 @@ function ChangePassword({ onClose, onPasswordChanged }) {
       return;
     }
     
-    if (newPassword.length < 6) {
-      setError('New password must be at least 6 characters');
+    if (newPassword.length < 4) {
+      setError('New password must be at least 4 characters');
       return;
     }
     
