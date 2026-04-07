@@ -5,6 +5,7 @@ function GroupMembers({ groupId, onMemberChange }) {
   const [members, setMembers] = useState([]);
   const [inviteEmail, setInviteEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // For initial members load
   const [isOwner, setIsOwner] = useState(false);
   const [ownerId, setOwnerId] = useState(null);
   const [currentUser, setCurrentUser] = useState(null);
@@ -29,6 +30,7 @@ function GroupMembers({ groupId, onMemberChange }) {
   }, [groupId]);
 
   const loadMembers = async () => {
+    setInitialLoading(true);
     try {
       const data = await api.getGroupMembers(groupId);
       setMembers(data.members || []);
@@ -36,6 +38,8 @@ function GroupMembers({ groupId, onMemberChange }) {
       setOwnerId(data.ownerId);
     } catch (error) {
       console.error('Error loading members:', error);
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -84,6 +88,21 @@ function GroupMembers({ groupId, onMemberChange }) {
     return <div className="card text-center">Select a group to manage members</div>;
   }
 
+  // Show loading spinner while fetching members
+  if (initialLoading) {
+    return (
+      <div>
+        <h2>Group Members</h2>
+        <div className="card text-center">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Loading members...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h2>Group Members</h2>
@@ -109,6 +128,7 @@ function GroupMembers({ groupId, onMemberChange }) {
               onChange={(e) => setInviteEmail(e.target.value)}
               className="add-member-input"
               onKeyPress={(e) => e.key === 'Enter' && addMember()}
+              disabled={loading}
             />
             <button 
               onClick={addMember} 

@@ -15,7 +15,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-  const [activeTab, setActiveTab] = useState('groups');
+  const [activeTab, setActiveTab] = useState('add'); // Changed from 'groups' to 'add'
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [friends, setFriends] = useState([]);
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -47,6 +47,12 @@ function App() {
     setRefreshTrigger(prev => prev + 1);
   };
 
+  // Handle group selection - reset active tab to 'add'
+  const handleSelectGroup = (groupId) => {
+    setSelectedGroupId(groupId);
+    setActiveTab('add'); // Reset to Add Meal tab when a new group is selected
+  };
+
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
   }
@@ -72,21 +78,21 @@ function App() {
 
       {!selectedGroupId ? (
         <div className="content">
-          <GroupList onSelectGroup={setSelectedGroupId} selectedGroupId={selectedGroupId} />
+          <GroupList onSelectGroup={handleSelectGroup} selectedGroupId={selectedGroupId} />
         </div>
       ) : (
         <>
           <div className="group-header">
-            <button onClick={() => setSelectedGroupId(null)} className="back-button">
+            <button onClick={() => {
+              setSelectedGroupId(null);
+              setActiveTab('add'); // Reset when going back
+            }} className="back-button">
               ← Back to Groups
             </button>
             <span className="group-header-text">Current Group: Group #{selectedGroupId}</span>
           </div>
 
           <div className="tabs">
-            <button className={activeTab === 'members' ? 'tab active' : 'tab'} onClick={() => setActiveTab('members')}>
-              👥 Members
-            </button>
             <button className={activeTab === 'add' ? 'tab active' : 'tab'} onClick={() => setActiveTab('add')}>
               ➕ Add Meal
             </button>
@@ -98,6 +104,9 @@ function App() {
             </button>
             <button className={activeTab === 'settlements' ? 'tab active' : 'tab'} onClick={() => setActiveTab('settlements')}>
               ✅ Settlements
+            </button>
+            <button className={activeTab === 'members' ? 'tab active' : 'tab'} onClick={() => setActiveTab('members')}>
+              👥 Members
             </button>
           </div>
 

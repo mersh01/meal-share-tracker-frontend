@@ -6,17 +6,21 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true); // New state for initial load
 
   useEffect(() => {
     loadGroups();
   }, []);
 
   const loadGroups = async () => {
+    setInitialLoading(true);
     try {
       const data = await api.getGroups();
       setGroups(data);
     } catch (error) {
       console.error('Error loading groups:', error);
+    } finally {
+      setInitialLoading(false);
     }
   };
 
@@ -53,6 +57,26 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
     }
   };
 
+  // Show loading spinner while fetching groups
+  if (initialLoading) {
+    return (
+      <div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+          <h2>My Groups</h2>
+          <button onClick={() => setShowCreateModal(true)} style={{ background: '#10b981' }}>
+            + New Group
+          </button>
+        </div>
+        <div className="card text-center">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Loading your groups...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
@@ -83,7 +107,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
                 </div>
                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                   <span className={`group-badge ${group.is_owner ? 'badge-owner' : 'badge-invited'}`}>
-                    {group.is_owner ? 'Owner' : 'Invited'}
+                    {group.is_owner ? 'Owner' : 'Member'}
                   </span>
                   {group.is_owner && (
                     <button 
