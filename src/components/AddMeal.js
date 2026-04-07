@@ -23,10 +23,14 @@ function AddMeal({ groupId, onMealAdded }) {
   const loadGroupMembers = async () => {
     setLoadingMembers(true);
     try {
-      const members = await api.getGroupMembers(groupId);
-      setGroupMembers(members);
+      const data = await api.getGroupMembers(groupId);
+      // The API returns { members: [], isOwner: boolean, ownerId: number }
+      // Extract the members array
+      const membersArray = data.members || [];
+      setGroupMembers(membersArray);
     } catch (error) {
       console.error('Error loading group members:', error);
+      setGroupMembers([]);
       alert('Error loading group members');
     } finally {
       setLoadingMembers(false);
@@ -107,7 +111,14 @@ function AddMeal({ groupId, onMealAdded }) {
   };
 
   if (loadingMembers) {
-    return <div className="card">Loading group members...</div>;
+    return (
+      <div className="card text-center">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading group members...</p>
+        </div>
+      </div>
+    );
   }
 
   if (groupMembers.length === 0) {
