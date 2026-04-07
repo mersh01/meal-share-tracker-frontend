@@ -1,1 +1,16 @@
-{"projectId":"prj_PErBWz909NNsTc1fzbMk8wBPa8ck","orgId":"team_vw9MvU3astgWQBPDHXHiTGic","projectName":"meal-share-trackerss"}
+{
+  "projectId": "prj_2eoNB8UALhy6a5j1nOMHCYgQMwDQ",
+  "orgId": "team_vw9MvU3astgWQBPDHXHiTGic",
+  "projectName": "meal-share-trackersss",
+  "settings": {
+    "createdAt": 1775484894664,
+    "framework": "create-react-app",
+    "devCommand": "npm start",
+    "installCommand": "npm install",
+    "buildCommand": "npm run vercel-build",
+    "outputDirectory": "build",
+    "rootDirectory": null,
+    "directoryListing": false,
+    "nodeVersion": "24.x"
+  }
+}

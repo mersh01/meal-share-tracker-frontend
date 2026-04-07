@@ -53,49 +53,58 @@ function GroupMembers({ groupId, onMemberChange }) {
   };
 
   if (!groupId) {
-    return <div className="card">Select a group to manage members</div>;
+    return <div className="card text-center">Select a group to manage members</div>;
   }
 
   return (
-    <div className="card">
-      <h3>Group Members</h3>
+    <div>
+      <h2>Group Members</h2>
       
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
-        <input
-          type="email"
-          placeholder="Enter email to invite"
-          value={inviteEmail}
-          onChange={(e) => setInviteEmail(e.target.value)}
-          style={{ flex: 1 }}
-        />
-        <button onClick={addMember} disabled={loading} style={{ background: '#10b981' }}>
-          + Add Member
-        </button>
+      <div className="add-member-section">
+        <div className="add-member-title">
+          <span>👥</span> Add New Member
+        </div>
+        <div className="add-member-input-group">
+          <input
+            type="email"
+            placeholder="Enter email to invite"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            className="add-member-input"
+            onKeyPress={(e) => e.key === 'Enter' && addMember()}
+          />
+          <button 
+            onClick={addMember} 
+            disabled={loading} 
+            className="add-member-btn"
+          >
+            {loading ? 'Adding...' : '+ Add Member'}
+          </button>
+        </div>
       </div>
       
-      <div>
-        {members.map(member => (
-          <div key={member.id} style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '10px',
-            borderBottom: '1px solid #e0e0e0'
-          }}>
-            <div>
-              <strong>{member.member_name}</strong>
-              <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '10px' }}>
-                {member.email}
-              </span>
-            </div>
-            <button 
-              onClick={() => removeMember(member.user_id, member.member_name)}
-              style={{ background: '#ef4444', padding: '5px 10px' }}
-            >
-              Remove
-            </button>
+      <div className="member-list">
+        <h3>Current Members ({members.length})</h3>
+        {members.length === 0 ? (
+          <div className="card text-center">
+            <p>No members yet. Invite someone to join!</p>
           </div>
-        ))}
+        ) : (
+          members.map(member => (
+            <div key={member.id} className="member-card">
+              <div className="member-info">
+                <div className="member-name">{member.member_name}</div>
+                <div className="member-email">{member.email}</div>
+              </div>
+              <button 
+                onClick={() => removeMember(member.user_id, member.member_name)}
+                className="remove-btn"
+              >
+                Remove
+              </button>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

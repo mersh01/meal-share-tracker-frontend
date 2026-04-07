@@ -55,7 +55,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
         <h2>My Groups</h2>
         <button onClick={() => setShowCreateModal(true)} style={{ background: '#10b981' }}>
           + New Group
@@ -63,7 +63,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
       </div>
 
       {groups.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center' }}>
+        <div className="card text-center">
           <p>No groups yet. Create your first group or wait to be invited!</p>
         </div>
       ) : (
@@ -71,98 +71,55 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
           {groups.map(group => (
             <div 
               key={group.id} 
-              className={`group-item ${selectedGroupId === group.id ? 'active' : ''}`}
+              className={`group-card ${selectedGroupId === group.id ? 'active' : ''}`}
               onClick={() => onSelectGroup(group.id)}
-              style={{
-                padding: '15px',
-                margin: '10px 0',
-                background: selectedGroupId === group.id ? '#667eea20' : '#f8f9fa',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                border: selectedGroupId === group.id ? '2px solid #667eea' : '1px solid #e0e0e0',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-              }}
             >
-              <div>
-                <strong>{group.name}</strong>
-                <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '10px' }}>
-                  {group.member_count} members
-                </span>
-                {!group.is_owner && (
-                  <span style={{ 
-                    fontSize: '0.7em', 
-                    background: '#f59e0b', 
-                    color: 'white', 
-                    padding: '2px 6px', 
-                    borderRadius: '4px',
-                    marginLeft: '10px'
-                  }}>
-                    Invited
+              <div className="group-info">
+                <div>
+                  <span className="group-name">{group.name}</span>
+                  <span style={{ fontSize: '0.8em', color: '#666', marginLeft: '10px' }}>
+                    {group.member_count} members
                   </span>
-                )}
-                {group.is_owner && (
-                  <span style={{ 
-                    fontSize: '0.7em', 
-                    background: '#10b981', 
-                    color: 'white', 
-                    padding: '2px 6px', 
-                    borderRadius: '4px',
-                    marginLeft: '10px'
-                  }}>
-                    Owner
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span className={`group-badge ${group.is_owner ? 'badge-owner' : 'badge-invited'}`}>
+                    {group.is_owner ? 'Owner' : 'Invited'}
                   </span>
-                )}
+                  {group.is_owner && (
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteGroup(group.id, group.name);
+                      }}
+                      style={{ background: '#ef4444', padding: '5px 10px', fontSize: '0.8rem' }}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
               </div>
-              {group.is_owner && (
-                <button 
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteGroup(group.id, group.name);
-                  }}
-                  style={{ background: '#ef4444', padding: '5px 10px' }}
-                >
-                  Delete
-                </button>
-              )}
             </div>
           ))}
         </div>
       )}
 
       {showCreateModal && (
-        <div className="modal" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div className="modal-content" style={{
-            background: 'white',
-            padding: '30px',
-            borderRadius: '12px',
-            width: '400px'
-          }}>
-            <h3>Create New Group</h3>
+        <div className="modal">
+          <div className="modal-content">
+            <h3 style={{ marginBottom: '20px' }}>Create New Group</h3>
             <input
               type="text"
               placeholder="Group name (e.g., Roommates, Trip to Bali)"
               value={newGroupName}
               onChange={(e) => setNewGroupName(e.target.value)}
-              style={{ width: '100%', margin: '15px 0' }}
+              style={{ width: '100%', marginBottom: '20px' }}
+              onKeyPress={(e) => e.key === 'Enter' && createGroup()}
             />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={createGroup} disabled={loading}>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <button onClick={createGroup} disabled={loading} style={{ flex: 1 }}>
                 {loading ? 'Creating...' : 'Create'}
               </button>
-              <button onClick={() => setShowCreateModal(false)} style={{ background: '#6c757d' }}>
+              <button onClick={() => setShowCreateModal(false)} style={{ background: '#6c757d', flex: 1 }}>
                 Cancel
               </button>
             </div>
