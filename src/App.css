@@ -16,9 +16,6 @@ body {
   padding: 20px;
 }
 
-/* ============================================
-   HEADER & TABS
-   ============================================ */
 .header {
   text-align: center;
   color: white;
@@ -65,9 +62,6 @@ body {
   font-weight: bold;
 }
 
-/* ============================================
-   CONTENT & CARDS
-   ============================================ */
 .content {
   background: white;
   border-radius: 12px;
@@ -75,16 +69,7 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.card {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-/* ============================================
-   FORMS
-   ============================================ */
+/* Form styles */
 .form-group {
   margin-bottom: 20px;
 }
@@ -110,9 +95,6 @@ input:focus, select:focus {
   border-color: #667eea;
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
 button {
   background: #667eea;
   color: white;
@@ -133,14 +115,14 @@ button:active {
   transform: translateY(0);
 }
 
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Cards */
+.card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
-/* ============================================
-   BALANCE COLORS
-   ============================================ */
 .balance-positive {
   color: #10b981;
   font-weight: bold;
@@ -155,473 +137,35 @@ button:disabled {
   color: #6b7280;
 }
 
-/* ============================================
-   GROUP MEMBERS PAGE
-   ============================================ */
-.member-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* Friend list */
+.friend-list {
+  display: grid;
+  gap: 10px;
   margin-top: 20px;
 }
 
-.member-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px;
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  transition: all 0.3s ease;
-}
-
-.member-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.member-name {
-  font-weight: 600;
-  font-size: 1rem;
-  color: #333;
-  word-break: break-word;
-}
-
-.member-email {
-  font-size: 0.8rem;
-  color: #666;
-  word-break: break-all;
-  margin-top: 4px;
-}
-
-.remove-btn {
-  background: #ef4444;
-  padding: 8px 16px;
-  font-size: 0.875rem;
-  margin-left: 10px;
-  flex-shrink: 0;
-}
-
-.remove-btn:hover {
-  background: #dc2626;
-}
-
-/* Add Member Section */
-.add-member-section {
-  background: #f0fdf4;
-  border: 2px solid #86efac;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.add-member-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #166534;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.add-member-input-group {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.add-member-input {
-  flex: 1;
-  min-width: 200px;
-}
-
-.add-member-btn {
-  background: #10b981;
-  white-space: nowrap;
-}
-
-.add-member-btn:hover {
-  background: #059669;
-}
-
-/* ============================================
-   GROUP LIST PAGE
-   ============================================ */
-.group-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.group-card {
-  padding: 16px;
-  margin: 12px 0;
-  background: #f8f9fa;
-  border-radius: 10px;
-  border: 1px solid #e0e0e0;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.group-card.active {
-  background: #667eea20;
-  border: 2px solid #667eea;
-}
-
-.group-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.group-name {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.group-badge {
-  font-size: 0.7em;
-  padding: 2px 8px;
-  border-radius: 12px;
-  background: #e0e0e0;
-}
-
-.badge-owner {
-  background: #10b981;
-  color: white;
-}
-
-.badge-invited {
-  background: #f59e0b;
-  color: white;
-}
-
-/* ============================================
-   BALANCE VIEW
-   ============================================ */
-.balance-row {
+.friend-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 12px;
   background: white;
-  border-radius: 8px;
-  border: 1px solid #e0e0e0;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-/* Payment Suggestions */
-.payment-card {
-  padding: 15px;
-  margin: 10px 0;
-  background: #e8f4f8;
-  border-radius: 8px;
-  border-left: 4px solid #10b981;
-}
-
-.payment-info {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.payment-action {
-  display: flex;
-  justify-content: flex-end;
-}
-
-/* Pending Settlements */
-.pending-card {
-  padding: 15px;
-  margin: 10px 0;
-  background: #fffbeb;
-  border-radius: 8px;
-  border: 1px solid #fde68a;
-}
-
-.pending-status {
-  display: inline-block;
-  background: #f59e0b;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.75em;
-  margin-top: 8px;
-}
-
-/* ============================================
-   MEAL HISTORY
-   ============================================ */
-.meal-card {
-  margin-bottom: 16px;
-}
-
-.meal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-
-.meal-detail-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e0e0e0;
-}
-
-/* ============================================
-   SETTLEMENTS PAGE
-   ============================================ */
-.settlement-card {
-  padding: 15px;
-  margin: 10px 0;
-  border-radius: 8px;
-}
-
-.settlement-pending {
-  background: #fef3c7;
-  border: 1px solid #fde68a;
-}
-
-.settlement-completed {
-  background: #d1fae5;
-  border: 1px solid #a7f3d0;
-}
-
-.settlement-info {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.settlement-actions {
-  margin-top: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* ============================================
-   MODAL
-   ============================================ */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.modal-content {
-  background: white;
-  padding: 30px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-/* ============================================
-   LOGIN PAGE
-   ============================================ */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 20px;
-}
-
-.login-card {
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-}
-
-.login-card h2 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #333;
-}
-
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
-.text-center {
-  text-align: center;
-}
-
-.mt-2 { margin-top: 8px; }
-.mt-3 { margin-top: 16px; }
-.mb-2 { margin-bottom: 8px; }
-.mb-3 { margin-bottom: 16px; }
-.flex { display: flex; }
-.flex-column { flex-direction: column; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 16px; }
-.w-100 { width: 100%; }
-
-/* Loading & Error States */
-.loading {
-  text-align: center;
-  padding: 40px;
-  color: #666;
-}
-
-.error-message {
-  background: #fee2e2;
-  color: #dc2626;
-  padding: 12px;
   border-radius: 6px;
-  margin-bottom: 16px;
-  font-size: 0.9rem;
+  border: 1px solid #e0e0e0;
 }
 
-.success-message {
-  background: #d1fae5;
-  color: #059669;
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 16px;
-  font-size: 0.9rem;
-}
-
-/* ============================================
-   BACK BUTTON & GROUP HEADER
-   ============================================ */
-.back-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #6c757d;
-  padding: 8px 16px;
-  margin-bottom: 20px;
-  font-size: 0.9rem;
-}
-
-.back-button:hover {
-  background: #5a6268;
-}
-
-.group-header {
-  padding: 10px 16px;
-  background: #f0f0f0;
-  margin-bottom: 20px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
-/* ============================================
-   MOBILE RESPONSIVE (max-width: 480px)
-   ============================================ */
-@media (max-width: 480px) {
-  .header h1 { font-size: 1.5rem; }
-  .header p { font-size: 0.85rem; }
-  
-  .tabs {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    justify-content: flex-start;
-    gap: 8px;
-    padding-bottom: 8px;
-    -webkit-overflow-scrolling: touch;
+/* Responsive */
+@media (max-width: 768px) {
+  .app {
+    padding: 10px;
   }
   
   .tab {
-    padding: 8px 14px;
-    font-size: 0.8rem;
-    white-space: nowrap;
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
   
-  .content { padding: 15px; }
-  .card { padding: 15px; }
-  
-  /* Stack member cards on mobile */
-  .member-card {
-    flex-direction: column;
-    align-items: stretch;
-    text-align: center;
-  }
-  
-  .member-info { margin-bottom: 10px; }
-  .remove-btn { margin-left: 0; width: 100%; }
-  
-  /* Stack add member form */
-  .add-member-input-group { flex-direction: column; }
-  .add-member-btn { width: 100%; }
-  
-  /* Stack balance rows */
-  .balance-row {
-    flex-direction: column;
-    text-align: center;
-    gap: 6px;
-  }
-  
-  /* Full width buttons on mobile */
-  button, .payment-action button, .settlement-actions button {
-    width: 100%;
-  }
-  
-  /* Prevent zoom on iOS */
-  input, select { font-size: 16px; }
-  
-  /* Modal adjustments */
-  .modal-content {
+  .content {
     padding: 20px;
-    width: calc(100% - 40px);
   }
-  
-  .group-header { flex-direction: column; text-align: center; }
-  .group-info { flex-direction: column; text-align: center; }
-  .meal-header { flex-direction: column; }
-  .meal-detail-row { flex-direction: column; gap: 8px; }
-  .login-card { padding: 25px; margin: 20px; }
-  .login-card h2 { font-size: 1.5rem; }
-  .settlement-actions { flex-direction: column; }
-}
-
-/* ============================================
-   TABLET DEVICES (481px - 768px)
-   ============================================ */
-@media (min-width: 481px) and (max-width: 768px) {
-  .header h1 { font-size: 2rem; }
-  .tab { padding: 10px 18px; font-size: 0.9rem; }
-  .member-card { padding: 12px; }
-  .add-member-input-group { flex-direction: row; }
-  button { width: auto; min-width: 120px; }
-  .remove-btn { width: auto; }
-}
-
-/* ============================================
-   DESKTOP (769px and above)
-   ============================================ */
-@media (min-width: 769px) {
-  .member-card { padding: 15px 20px; }
-  button { width: auto; }
 }
