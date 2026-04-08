@@ -6,7 +6,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newGroupName, setNewGroupName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true); // New state for initial load
+  const [initialLoading, setInitialLoading] = useState(true);
 
   useEffect(() => {
     loadGroups();
@@ -49,7 +49,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
         await api.deleteGroup(groupId);
         await loadGroups();
         if (selectedGroupId === groupId) {
-          onSelectGroup(null);
+          onSelectGroup(null, null);
         }
       } catch (error) {
         alert('Error deleting group');
@@ -96,7 +96,7 @@ function GroupList({ onSelectGroup, selectedGroupId }) {
             <div 
               key={group.id} 
               className={`group-card ${selectedGroupId === group.id ? 'active' : ''}`}
-              onClick={() => onSelectGroup(group.id)}
+              onClick={() => onSelectGroup(group.id, group.name)}
             >
               <div className="group-info">
                 <div>

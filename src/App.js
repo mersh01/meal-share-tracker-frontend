@@ -33,25 +33,6 @@ function App() {
     }
   }, []);
 
-  // Load group name when selected
-  useEffect(() => {
-    if (selectedGroupId) {
-      loadGroupName();
-    }
-  }, [selectedGroupId]);
-
-  const loadGroupName = async () => {
-    try {
-      const groups = await api.getGroups();
-      const group = groups.find(g => g.id === selectedGroupId);
-      if (group) {
-        setSelectedGroupName(group.name);
-      }
-    } catch (error) {
-      console.error('Error loading group name:', error);
-    }
-  };
-
   const handleLogin = (userData) => {
     setUser(userData);
     setIsAuthenticated(true);
@@ -63,6 +44,7 @@ function App() {
     setIsAuthenticated(false);
     setUser(null);
     setSelectedGroupId(null);
+    setSelectedGroupName('');
     setIsMobileMenuOpen(false);
   };
 
@@ -72,17 +54,23 @@ function App() {
 
   const handleSelectGroup = (groupId, groupName) => {
     setSelectedGroupId(groupId);
-    setSelectedGroupName(groupName);
+    setSelectedGroupName(groupName || '');
     setActiveTab('add');
     setIsMobileMenuOpen(false);
   };
 
+  const handleBackToGroups = () => {
+    setSelectedGroupId(null);
+    setSelectedGroupName('');
+    setActiveTab('add');
+  };
+
   const tabs = [
-    { id: 'add', label: '➕ Add Meal', icon: '➕' },
-    { id: 'balance', label: '💰 Balances', icon: '💰' },
-    { id: 'history', label: '📜 Meal History', icon: '📜' },
-    { id: 'settlements', label: '✅ Settlements', icon: '✅' },
-    { id: 'members', label: '👥 Members', icon: '👥' }
+    { id: 'add', label: 'Add Meal', icon: '➕' },
+    { id: 'balance', label: 'Balances', icon: '💰' },
+    { id: 'history', label: 'Meal History', icon: '📜' },
+    { id: 'settlements', label: 'Settlements', icon: '✅' },
+    { id: 'members', label: 'Members', icon: '👥' }
   ];
 
   if (!isAuthenticated) {
@@ -90,7 +78,7 @@ function App() {
   }
 
   return (
-    <div className={`app ${selectedGroupId ? 'has-sidebar' : ''}`}>
+    <div className="app">
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
@@ -190,10 +178,7 @@ function App() {
               <div className="sidebar-footer">
                 <button 
                   className="back-to-groups-btn"
-                  onClick={() => {
-                    setSelectedGroupId(null);
-                    setActiveTab('add');
-                  }}
+                  onClick={handleBackToGroups}
                 >
                   ← Back to Groups
                 </button>
@@ -203,10 +188,7 @@ function App() {
               <div className="sidebar-footer-collapsed">
                 <button 
                   className="back-to-groups-icon"
-                  onClick={() => {
-                    setSelectedGroupId(null);
-                    setActiveTab('add');
-                  }}
+                  onClick={handleBackToGroups}
                   title="Back to Groups"
                 >
                   ←
@@ -220,10 +202,7 @@ function App() {
             <div className="mobile-group-header">
               <button 
                 className="back-button-mobile"
-                onClick={() => {
-                  setSelectedGroupId(null);
-                  setActiveTab('add');
-                }}
+                onClick={handleBackToGroups}
               >
                 ← Back
               </button>
