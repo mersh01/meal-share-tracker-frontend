@@ -15,11 +15,13 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [selectedGroupName, setSelectedGroupName] = useState('');
   const [activeTab, setActiveTab] = useState('add');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [friends, setFriends] = useState([]);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -30,6 +32,25 @@ function App() {
       setIsAuthenticated(true);
     }
   }, []);
+
+  // Load group name when selected
+  useEffect(() => {
+    if (selectedGroupId) {
+      loadGroupName();
+    }
+  }, [selectedGroupId]);
+
+  const loadGroupName = async () => {
+    try {
+      const groups = await api.getGroups();
+      const group = groups.find(g => g.id === selectedGroupId);
+      if (group) {
+        setSelectedGroupName(group.name);
+      }
+    } catch (error) {
+      console.error('Error loading group name:', error);
+    }
+  };
 
   const handleLogin = (userData) => {
     setUser(userData);
@@ -49,18 +70,27 @@ function App() {
     setRefreshTrigger(prev => prev + 1);
   };
 
-  const handleSelectGroup = (groupId) => {
+  const handleSelectGroup = (groupId, groupName) => {
     setSelectedGroupId(groupId);
+    setSelectedGroupName(groupName);
     setActiveTab('add');
     setIsMobileMenuOpen(false);
   };
+
+  const tabs = [
+    { id: 'add', label: '➕ Add Meal', icon: '➕' },
+    { id: 'balance', label: '💰 Balances', icon: '💰' },
+    { id: 'history', label: '📜 Meal History', icon: '📜' },
+    { id: 'settlements', label: '✅ Settlements', icon: '✅' },
+    { id: 'members', label: '👥 Members', icon: '👥' }
+  ];
 
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
   }
 
   return (
-    <div className="app">
+    <div className={`app ${selectedGroupId ? 'has-sidebar' : ''}`}>
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
@@ -91,6 +121,7 @@ function App() {
         </div>
       )}
 
+      {/* Header */}
       <header className="header">
         <div className="header-top">
           <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
@@ -101,10 +132,10 @@ function App() {
             <p>Track meals with friends, split bills easily</p>
           </div>
           <div className="header-actions">
-            <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>
+            <button className="change-password-btn" onClick={() => setShowChangePassword(true)} title="Change Password">
               🔒
             </button>
-            <button className="logout-btn" onClick={handleLogout}>
+            <button className="logout-btn" onClick={handleLogout} title="Logout">
               🚪
             </button>
           </div>
@@ -119,36 +150,86 @@ function App() {
           <GroupList onSelectGroup={handleSelectGroup} selectedGroupId={selectedGroupId} />
         </div>
       ) : (
-        <>
-          <div className="group-header">
-            <button onClick={() => {
-              setSelectedGroupId(null);
-              setActiveTab('add');
-            }} className="back-button">
-              ← Back to Groups
-            </button>
-            <span className="group-header-text">Current Group: Group #{selectedGroupId}</span>
-          </div>
+        <div className="dashboard-layout">
+          {/* Sidebar */}
+          <aside className={`sidebar ${isSidebarCollapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-header">
+              <button 
+                className="sidebar-toggle" 
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                title={isSidebarCollapsed ? 'Expand' : 'Collapse'}
+              >
+                {isSidebarCollapsed ? '→' : '←'}
+              </button>
+              {!isSidebarCollapsed && (
+                <div className="sidebar-group-info">
+                  <div className="sidebar-group-icon">👥</div>
+                  <div className="sidebar-group-name">{selectedGroupName}</div>
+                </div>
+              )}
+              {isSidebarCollapsed && (
+                <div className="sidebar-group-icon-small">👥</div>
+              )}
+            </div>
+            
+            <nav className="sidebar-nav">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  className={`sidebar-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  title={isSidebarCollapsed ? tab.label : ''}
+                >
+                  <span className="nav-icon">{tab.icon}</span>
+                  {!isSidebarCollapsed && <span className="nav-label">{tab.label}</span>}
+                </button>
+              ))}
+            </nav>
 
-          <div className="tabs">
-            <button className={activeTab === 'add' ? 'tab active' : 'tab'} onClick={() => setActiveTab('add')}>
-              ➕ Add Meal
-            </button>
-            <button className={activeTab === 'balance' ? 'tab active' : 'tab'} onClick={() => setActiveTab('balance')}>
-              💰 Balances
-            </button>
-            <button className={activeTab === 'history' ? 'tab active' : 'tab'} onClick={() => setActiveTab('history')}>
-              📜 Meal History
-            </button>
-            <button className={activeTab === 'settlements' ? 'tab active' : 'tab'} onClick={() => setActiveTab('settlements')}>
-              ✅ Settlements
-            </button>
-            <button className={activeTab === 'members' ? 'tab active' : 'tab'} onClick={() => setActiveTab('members')}>
-              👥 Members
-            </button>
-          </div>
+            {!isSidebarCollapsed && (
+              <div className="sidebar-footer">
+                <button 
+                  className="back-to-groups-btn"
+                  onClick={() => {
+                    setSelectedGroupId(null);
+                    setActiveTab('add');
+                  }}
+                >
+                  ← Back to Groups
+                </button>
+              </div>
+            )}
+            {isSidebarCollapsed && (
+              <div className="sidebar-footer-collapsed">
+                <button 
+                  className="back-to-groups-icon"
+                  onClick={() => {
+                    setSelectedGroupId(null);
+                    setActiveTab('add');
+                  }}
+                  title="Back to Groups"
+                >
+                  ←
+                </button>
+              </div>
+            )}
+          </aside>
 
-          <div className="content">
+          {/* Main Content */}
+          <main className="main-content">
+            <div className="mobile-group-header">
+              <button 
+                className="back-button-mobile"
+                onClick={() => {
+                  setSelectedGroupId(null);
+                  setActiveTab('add');
+                }}
+              >
+                ← Back
+              </button>
+              <span className="mobile-group-name">{selectedGroupName}</span>
+            </div>
+
             {activeTab === 'members' && (
               <GroupMembers groupId={selectedGroupId} onMemberChange={refreshData} />
             )}
@@ -175,8 +256,8 @@ function App() {
                 onConfirm={refreshData}
               />
             )}
-          </div>
-        </>
+          </main>
+        </div>
       )}
 
       {/* Change Password Modal */}
