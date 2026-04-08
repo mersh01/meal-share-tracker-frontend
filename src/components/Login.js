@@ -5,6 +5,8 @@ function Login({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -17,7 +19,7 @@ function Login({ onLogin }) {
       const endpoint = isLogin ? '/auth/login' : '/auth/register';
       const body = isLogin 
         ? { email, password }
-        : { email, password, name };
+        : { email, password, name, phone, account_number: accountNumber };
       
       const response = await fetch(`https://meal-share-backend.vercel.app/api${endpoint}`, {
         method: 'POST',
@@ -48,7 +50,8 @@ function Login({ onLogin }) {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      padding: '20px'
     }}>
       <div style={{
         background: 'white',
@@ -56,7 +59,9 @@ function Login({ onLogin }) {
         borderRadius: '12px',
         boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
         width: '100%',
-        maxWidth: '400px'
+        maxWidth: '450px',
+        maxHeight: '90vh',
+        overflowY: 'auto'
       }}>
         <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
           {isLogin ? 'Login' : 'Create Account'}
@@ -64,18 +69,34 @@ function Login({ onLogin }) {
         
         <form onSubmit={handleSubmit}>
           {!isLogin && (
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={inputStyle}
-              required
-            />
+            <>
+              <input
+                type="text"
+                placeholder="Full Name *"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={inputStyle}
+                required
+              />
+              <input
+                type="tel"
+                placeholder="Phone Number (optional)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                style={inputStyle}
+              />
+              <input
+                type="text"
+                placeholder="Account Number (optional)"
+                value={accountNumber}
+                onChange={(e) => setAccountNumber(e.target.value)}
+                style={inputStyle}
+              />
+            </>
           )}
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email *"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             style={inputStyle}
@@ -83,7 +104,7 @@ function Login({ onLogin }) {
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password *"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             style={inputStyle}
@@ -110,7 +131,16 @@ function Login({ onLogin }) {
         </form>
         
         <p
-          onClick={() => setIsLogin(!isLogin)}
+          onClick={() => {
+            setIsLogin(!isLogin);
+            setError('');
+            // Reset optional fields when switching
+            if (!isLogin) {
+              setName('');
+              setPhone('');
+              setAccountNumber('');
+            }
+          }}
           style={{
             textAlign: 'center',
             marginTop: '20px',

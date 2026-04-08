@@ -10,6 +10,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [settlementDate, setSettlementDate] = useState(new Date().toISOString().split('T')[0]);
   const [processingPayment, setProcessingPayment] = useState(false);
+  const [copiedField, setCopiedField] = useState(null);
 
   useEffect(() => {
     if (groupId) {
@@ -31,6 +32,12 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const copyToClipboard = (text, field) => {
+    navigator.clipboard.writeText(text);
+    setCopiedField(field);
+    setTimeout(() => setCopiedField(null), 2000);
   };
 
   const handleSettlePayment = async (payment) => {
@@ -148,55 +155,110 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
         </div>
       )}
 
-{suggestedPayments.length > 0 ? (
-  <div className="card">
-    <h3>💰 Payments You Need to Make</h3>
-    <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '15px' }}>
-      You owe these amounts. Click "Mark as Paid" after sending the money.
-    </p>
-    {suggestedPayments.map((payment, index) => (
-      <div key={index} style={{
-        padding: '15px',
-        margin: '10px 0',
-        background: '#e8f4f8',
-        borderRadius: '8px',
-        borderLeft: '4px solid #10b981'
-      }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div>
-            <span style={{ fontSize: '1.1em' }}>
-              You owe <strong>{payment.to_name}</strong>
-            </span>
-            <span className="balance-negative" style={{ marginLeft: '10px', fontSize: '1.2em' }}>
-              ${payment.amount.toFixed(2)}
-            </span>
-          </div>
-          <button 
-            onClick={() => {
-              setSelectedPayment(payment);
-              setShowSettlement(true);
-            }}
-            style={{ 
-              background: '#10b981', 
-              padding: '8px 16px',
-              margin: 0
-            }}
-            disabled={processingPayment}
-          >
-            ✓ Mark as Paid
-          </button>
+      {suggestedPayments.length > 0 ? (
+        <div className="card">
+          <h3>💰 Payments You Need to Make</h3>
+          <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '15px' }}>
+            You owe these amounts. Click "Mark as Paid" after sending the money.
+          </p>
+          {suggestedPayments.map((payment, index) => (
+            <div key={index} style={{
+              padding: '15px',
+              margin: '10px 0',
+              background: '#e8f4f8',
+              borderRadius: '8px',
+              borderLeft: '4px solid #10b981'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '15px' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ marginBottom: '10px' }}>
+                    <span style={{ fontSize: '1.1em' }}>
+                      You owe <strong>{payment.to_name}</strong>
+                    </span>
+                    <span className="balance-negative" style={{ marginLeft: '10px', fontSize: '1.2em' }}>
+                      ${payment.amount.toFixed(2)}
+                    </span>
+                  </div>
+                  
+                  {/* Contact Information Section */}
+                  {(payment.to_phone || payment.to_account || payment.to_email) && (
+                    <div style={{ 
+                      marginTop: '10px', 
+                      padding: '10px', 
+                      background: '#f0f0f0', 
+                      borderRadius: '6px',
+                      fontSize: '0.9em'
+                    }}>
+                      <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>📞 Receiver's Contact Info:</div>
+                      {payment.to_phone && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                          <span>📱 Phone:</span>
+                          <code style={{ background: 'white', padding: '2px 6px', borderRadius: '4px' }}>{payment.to_phone}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(payment.to_phone, `phone-${index}`)}
+                            style={{ padding: '2px 8px', fontSize: '0.7rem', background: '#667eea' }}
+                          >
+                            {copiedField === `phone-${index}` ? '✓ Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      )}
+                      {payment.to_account && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '5px' }}>
+                          <span>🏦 Account:</span>
+                          <code style={{ background: 'white', padding: '2px 6px', borderRadius: '4px' }}>{payment.to_account}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(payment.to_account, `account-${index}`)}
+                            style={{ padding: '2px 8px', fontSize: '0.7rem', background: '#667eea' }}
+                          >
+                            {copiedField === `account-${index}` ? '✓ Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      )}
+                      {payment.to_email && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>📧 Email:</span>
+                          <code style={{ background: 'white', padding: '2px 6px', borderRadius: '4px' }}>{payment.to_email}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(payment.to_email, `email-${index}`)}
+                            style={{ padding: '2px 8px', fontSize: '0.7rem', background: '#667eea' }}
+                          >
+                            {copiedField === `email-${index}` ? '✓ Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={() => {
+                    setSelectedPayment(payment);
+                    setShowSettlement(true);
+                  }}
+                  style={{ 
+                    background: '#10b981', 
+                    padding: '8px 16px',
+                    margin: 0,
+                    alignSelf: 'center'
+                  }}
+                  disabled={processingPayment}
+                >
+                  ✓ Mark as Paid
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
-      </div>
-    ))}
-  </div>
-) : (
-  pendingSettlements.length === 0 && (
-    <div className="card" style={{ background: '#d1fae5', textAlign: 'center' }}>
-      <h3>🎉 You're All Settled Up!</h3>
-      <p>You don't owe anyone anything!</p>
-    </div>
-  )
-)}
+      ) : (
+        pendingSettlements.length === 0 && (
+          <div className="card" style={{ background: '#d1fae5', textAlign: 'center' }}>
+            <h3>🎉 You're All Settled Up!</h3>
+            <p>You don't owe anyone anything!</p>
+          </div>
+        )
+      )}
 
       {showSettlement && selectedPayment && (
         <div className="card" style={{ background: '#fff3cd', border: '2px solid #ffc107' }}>
@@ -207,7 +269,30 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
           <p className="balance-positive" style={{ fontSize: '1.3em' }}>
             Amount: ${selectedPayment.amount.toFixed(2)}
           </p>
-          <div className="form-group">
+          
+          {/* Show receiver info in confirmation modal */}
+          {(selectedPayment.to_phone || selectedPayment.to_account) && (
+            <div style={{ 
+              marginTop: '15px', 
+              padding: '12px', 
+              background: '#e8f4f8', 
+              borderRadius: '8px',
+              border: '1px solid #b8daff'
+            }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '8px' }}>📋 Send payment to:</div>
+              {selectedPayment.to_phone && (
+                <div style={{ marginBottom: '5px' }}>📱 Phone: {selectedPayment.to_phone}</div>
+              )}
+              {selectedPayment.to_account && (
+                <div style={{ marginBottom: '5px' }}>🏦 Account: {selectedPayment.to_account}</div>
+              )}
+              {selectedPayment.to_email && (
+                <div>📧 Email: {selectedPayment.to_email}</div>
+              )}
+            </div>
+          )}
+          
+          <div className="form-group" style={{ marginTop: '15px' }}>
             <label>Payment Date:</label>
             <input
               type="date"
