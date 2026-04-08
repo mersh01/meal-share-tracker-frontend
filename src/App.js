@@ -15,10 +15,11 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [selectedGroupId, setSelectedGroupId] = useState(null);
-  const [activeTab, setActiveTab] = useState('add'); // Changed from 'groups' to 'add'
+  const [activeTab, setActiveTab] = useState('add');
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [friends, setFriends] = useState([]);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -41,16 +42,17 @@ function App() {
     setIsAuthenticated(false);
     setUser(null);
     setSelectedGroupId(null);
+    setIsMobileMenuOpen(false);
   };
 
   const refreshData = () => {
     setRefreshTrigger(prev => prev + 1);
   };
 
-  // Handle group selection - reset active tab to 'add'
   const handleSelectGroup = (groupId) => {
     setSelectedGroupId(groupId);
-    setActiveTab('add'); // Reset to Add Meal tab when a new group is selected
+    setActiveTab('add');
+    setIsMobileMenuOpen(false);
   };
 
   if (!isAuthenticated) {
@@ -59,20 +61,56 @@ function App() {
 
   return (
     <div className="app">
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <h3>Menu</h3>
+              <button className="close-menu" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+            </div>
+            <div className="mobile-menu-user">
+              <div className="mobile-user-avatar">👤</div>
+              <div className="mobile-user-info">
+                <div className="mobile-user-name">{user?.name}</div>
+                <div className="mobile-user-email">{user?.email}</div>
+              </div>
+            </div>
+            <div className="mobile-menu-items">
+              <button onClick={() => {
+                setShowChangePassword(true);
+                setIsMobileMenuOpen(false);
+              }} className="mobile-menu-item">
+                🔒 Change Password
+              </button>
+              <button onClick={handleLogout} className="mobile-menu-item logout">
+                🚪 Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="header">
-        <h1>🍽️ Meal Share Tracker</h1>
-        <p>Track meals with friends, split bills easily</p>
-        <div style={{ marginTop: '10px', display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <span style={{ marginRight: '5px' }}>Welcome, {user?.name}!</span>
-          <button 
-            onClick={() => setShowChangePassword(true)} 
-            style={{ background: '#10b981', padding: '5px 15px' }}
-          >
-            🔒 Change Password
+        <div className="header-top">
+          <button className="mobile-menu-btn" onClick={() => setIsMobileMenuOpen(true)}>
+            ☰
           </button>
-          <button onClick={handleLogout} style={{ background: '#ef4444', padding: '5px 15px' }}>
-            Logout
-          </button>
+          <div className="header-title">
+            <h1>🍽️ Meal Share Tracker</h1>
+            <p>Track meals with friends, split bills easily</p>
+          </div>
+          <div className="header-actions">
+            <button className="change-password-btn" onClick={() => setShowChangePassword(true)}>
+              🔒
+            </button>
+            <button className="logout-btn" onClick={handleLogout}>
+              🚪
+            </button>
+          </div>
+        </div>
+        <div className="user-greeting">
+          Welcome, {user?.name}!
         </div>
       </header>
 
@@ -85,7 +123,7 @@ function App() {
           <div className="group-header">
             <button onClick={() => {
               setSelectedGroupId(null);
-              setActiveTab('add'); // Reset when going back
+              setActiveTab('add');
             }} className="back-button">
               ← Back to Groups
             </button>
@@ -146,7 +184,6 @@ function App() {
         <ChangePassword 
           onClose={() => setShowChangePassword(false)}
           onPasswordChanged={() => {
-            // Optional: handle any post-change logic
             console.log('Password changed successfully');
           }}
         />

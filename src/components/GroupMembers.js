@@ -110,7 +110,7 @@ function GroupMembers({ groupId, onMemberChange }) {
       {!isOwner && (
         <div className="card" style={{ background: '#fef3c7', borderLeft: '4px solid #f59e0b', marginBottom: '20px' }}>
           <p style={{ margin: 0 }}>
-            ℹ️ You are a member of this group. Only the group owner can add or remove members.
+            ℹ️ You are a member of this group.
           </p>
         </div>
       )}
