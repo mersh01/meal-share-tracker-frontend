@@ -772,7 +772,7 @@ button:disabled {
   }
   
   .group-header { flex-direction: column; text-align: center; }
-  .group-info { flex-direction: column; text-align: center; }
+  .group-info { flex-direction: row; text-align: center; }
   .meal-header { flex-direction: column; }
   .meal-detail-row { flex-direction: column; gap: 8px; }
   .login-card { padding: 25px; margin: 20px; }
