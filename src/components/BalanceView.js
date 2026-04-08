@@ -383,11 +383,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                     🏦 Account: {selectedPayment.to_account}
                   </div>
                 )}
-                {selectedPayment.to_email && (
-                  <div style={{ wordBreak: 'break-word' }}>
-                    📧 Email: {selectedPayment.to_email}
-                  </div>
-                )}
+                
               </div>
             </div>
           )}
