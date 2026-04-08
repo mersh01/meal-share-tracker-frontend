@@ -80,7 +80,6 @@ function App() {
   return (
     <div className="app">
       {/* Mobile Menu Overlay */}
-      // In App.js, update the mobile menu section inside the return statement:
 
 {/* Mobile Menu Overlay */}
 {isMobileMenuOpen && (
