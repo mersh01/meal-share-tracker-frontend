@@ -211,7 +211,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                 </div>
                 
                 {/* Contact Information Section - Mobile Responsive */}
-                {(payment.to_phone || payment.to_account || payment.to_email) && (
+                {(payment.to_phone || payment.to_account) && (
                   <div style={{ 
                     marginTop: '8px', 
                     padding: '12px', 
@@ -295,40 +295,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                           </button>
                         </div>
                       )}
-                      {payment.to_email && (
-                        <div style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'space-between',
-                          flexWrap: 'wrap',
-                          gap: '8px'
-                        }}>
-                          <span style={{ minWidth: '50px' }}>📧 Email:</span>
-                          <code style={{ 
-                            background: 'white', 
-                            padding: '4px 8px', 
-                            borderRadius: '4px',
-                            fontSize: '0.85em',
-                            wordBreak: 'break-all',
-                            flex: 1,
-                            textAlign: 'center'
-                          }}>
-                            {payment.to_email}
-                          </code>
-                          <button
-                            type="button"
-                            onClick={() => copyToClipboard(payment.to_email, `email-${index}`)}
-                            style={{ 
-                              padding: '4px 12px', 
-                              fontSize: '0.75rem', 
-                              background: '#667eea',
-                              minWidth: '65px'
-                            }}
-                          >
-                            {copiedField === `email-${index}` ? '✓ Copied!' : 'Copy'}
-                          </button>
-                        </div>
-                      )}
+                     
                     </div>
                   </div>
                 )}
@@ -356,7 +323,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
           </p>
           
           {/* Show receiver info in confirmation modal - Mobile Responsive */}
-          {(selectedPayment.to_phone || selectedPayment.to_account || selectedPayment.to_email) && (
+          {(selectedPayment.to_phone || selectedPayment.to_account) && (
             <div style={{ 
               marginTop: '15px', 
               padding: '15px', 
