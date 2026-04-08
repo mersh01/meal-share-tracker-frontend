@@ -80,34 +80,58 @@ function App() {
   return (
     <div className="app">
       {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
-          <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
-            <div className="mobile-menu-header">
-              <h3>Menu</h3>
-              <button className="close-menu" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
-            </div>
-            <div className="mobile-menu-user">
-              <div className="mobile-user-avatar">👤</div>
-              <div className="mobile-user-info">
-                <div className="mobile-user-name">{user?.name}</div>
-                <div className="mobile-user-email">{user?.email}</div>
-              </div>
-            </div>
-            <div className="mobile-menu-items">
-              <button onClick={() => {
-                setShowChangePassword(true);
+      // In App.js, update the mobile menu section inside the return statement:
+
+{/* Mobile Menu Overlay */}
+{isMobileMenuOpen && (
+  <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+    <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+      <div className="mobile-menu-header">
+        <h3>Menu</h3>
+        <button className="close-menu" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+      </div>
+      <div className="mobile-menu-user">
+        <div className="mobile-user-avatar">👤</div>
+        <div className="mobile-user-info">
+          <div className="mobile-user-name">{user?.name}</div>
+          <div className="mobile-user-email">{user?.email}</div>
+        </div>
+      </div>
+      
+      {/* Add Navigation Tabs for Mobile */}
+      {selectedGroupId && (
+        <div className="mobile-nav-section">
+          <div className="mobile-nav-title">Navigation</div>
+          {tabs.map(tab => (
+            <button
+              key={tab.id}
+              className={`mobile-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => {
+                setActiveTab(tab.id);
                 setIsMobileMenuOpen(false);
-              }} className="mobile-menu-item">
-                🔒 Change Password
-              </button>
-              <button onClick={handleLogout} className="mobile-menu-item logout">
-                🚪 Logout
-              </button>
-            </div>
-          </div>
+              }}
+            >
+              <span className="mobile-nav-icon">{tab.icon}</span>
+                  <span className="mobile-nav-label">{tab.label}</span>
+            </button>
+          ))}
         </div>
       )}
+      
+      <div className="mobile-menu-items">
+        <button onClick={() => {
+          setShowChangePassword(true);
+          setIsMobileMenuOpen(false);
+        }} className="mobile-menu-item">
+          🔒 Change Password
+        </button>
+        <button onClick={handleLogout} className="mobile-menu-item logout">
+          🚪 Logout
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
       {/* Header */}
       <header className="header">
