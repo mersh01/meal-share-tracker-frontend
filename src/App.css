@@ -1475,3 +1475,22 @@ button:disabled {
   animation: slideIn 0.3s ease;
   overflow-y: auto;
 }
+
+/* Mobile Responsive for Balance View */
+@media (max-width: 768px) {
+  .contact-info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .contact-info-row code {
+    width: 100%;
+    text-align: left;
+    word-break: break-all;
+  }
+  
+  .copy-button {
+    align-self: flex-end;
+  }
+}
