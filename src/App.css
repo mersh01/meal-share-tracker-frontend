@@ -1494,3 +1494,159 @@ button:disabled {
     align-self: flex-end;
   }
 }
+
+/* Meal History Styles */
+.meals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.meal-card {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  transition: all 0.3s ease;
+}
+
+.meal-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.meal-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.meal-icon {
+  font-size: 1.3rem;
+}
+
+.meal-type {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.meal-date {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.meal-details {
+  margin-bottom: 12px;
+}
+
+.meal-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 100px;
+}
+
+.detail-value {
+  color: #333;
+}
+
+.meal-shares {
+  margin-top: 10px;
+  padding: 8px;
+  background: #e9ecef;
+  border-radius: 6px;
+}
+
+.meal-shares summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: #667eea;
+  margin-bottom: 8px;
+}
+
+.shares-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 15px;
+}
+
+.share-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.meal-creator {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  color: #999;
+  font-style: italic;
+}
+
+.meal-actions {
+  margin-top: 12px;
+  text-align: right;
+}
+
+.delete-meal-btn {
+  background: #ef4444;
+  padding: 6px 16px;
+  font-size: 0.85rem;
+  width: auto;
+}
+
+.delete-meal-btn:hover {
+  background: #dc2626;
+}
+
+/* Mobile Responsive for Meal History */
+@media (max-width: 768px) {
+  .meal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .meal-detail-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .detail-label {
+    min-width: auto;
+  }
+  
+  .meal-actions {
+    text-align: center;
+  }
+  
+  .delete-meal-btn {
+    width: 100%;
+  }
+  
+  .share-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -29,7 +29,16 @@ function MealHistory({ groupId, refreshTrigger, onDelete }) {
     setLoading(true);
     try {
       const data = await api.getMeals(groupId);
-      setMeals(data);
+      // Ensure meals are sorted by date (newest first) and then by id
+      const sortedMeals = [...data].sort((a, b) => {
+        const dateA = new Date(a.date);
+        const dateB = new Date(b.date);
+        if (dateA.getTime() !== dateB.getTime()) {
+          return dateB.getTime() - dateA.getTime();
+        }
+        return b.id - a.id;
+      });
+      setMeals(sortedMeals);
     } catch (error) {
       console.error('Error loading meals:', error);
     } finally {
@@ -51,8 +60,20 @@ function MealHistory({ groupId, refreshTrigger, onDelete }) {
     }
   };
 
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   if (loading) {
-    return <div>Loading meal history...</div>;
+    return (
+      <div className="text-center">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading meal history...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!groupId) {
@@ -62,52 +83,89 @@ function MealHistory({ groupId, refreshTrigger, onDelete }) {
   return (
     <div>
       <h2>Meal History</h2>
+      <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '20px' }}>
+        Showing {meals.length} meal{meals.length !== 1 ? 's' : ''}
+      </p>
       
       {meals.length === 0 ? (
-        <p>No meals recorded yet. Add your first meal!</p>
+        <div className="card text-center">
+          <p>No meals recorded yet. Add your first meal!</p>
+        </div>
       ) : (
-        meals.map(meal => {
-          const isCreator = currentUser?.id === meal.creator_id;
-          
-          return (
-            <div key={meal.id} className="card">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div style={{ flex: 1 }}>
-                  <h3>{meal.meal_type === 'breakfast' ? '🍳 Breakfast' : '🍱 Lunch'} - {meal.date}</h3>
-                  <p>Paid by: <strong>{meal.payer_name}</strong></p>
-                  <p>Total: <strong className="balance-positive">${parseFloat(meal.total_amount).toFixed(2)}</strong></p>
-                  <p>Participants: {meal.participant_names || 'None'}</p>
+        <div className="meals-list">
+          {meals.map(meal => {
+            const isCreator = currentUser?.id === meal.creator_id;
+            
+            return (
+              <div key={meal.id} className="meal-card">
+                <div className="meal-header">
+                  <div className="meal-title">
+                    <span className="meal-icon">
+                      {meal.meal_type === 'breakfast' ? '🍳' : '🍱'}
+                    </span>
+                    <span className="meal-type">
+                      {meal.meal_type === 'breakfast' ? 'Breakfast' : 'Lunch'}
+                    </span>
+                  </div>
+                  <div className="meal-date">{formatDate(meal.date)}</div>
+                </div>
+                
+                <div className="meal-details">
+                  <div className="meal-detail-row">
+                    <span className="detail-label">Paid by:</span>
+                    <span className="detail-value">{meal.payer_name}</span>
+                  </div>
+                  <div className="meal-detail-row">
+                    <span className="detail-label">Total:</span>
+                    <span className="detail-value balance-positive">
+                      ${parseFloat(meal.total_amount).toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="meal-detail-row">
+                    <span className="detail-label">Participants:</span>
+                    <span className="detail-value">{meal.participant_names || 'None'}</span>
+                  </div>
+                  
                   {meal.shares && (
-                    <details>
-                      <summary style={{ cursor: 'pointer', marginTop: '10px' }}>View shares</summary>
-                      <div style={{ marginTop: '10px', paddingLeft: '20px' }}>
+                    <details className="meal-shares">
+                      <summary>View shares</summary>
+                      <div className="shares-list">
                         {meal.participant_names && meal.participant_names.split(',').map((name, idx) => {
                           const shares = meal.shares ? meal.shares.split(',') : [];
                           return (
-                            <p key={idx}>{name}: ${parseFloat(shares[idx] || 0).toFixed(2)}</p>
+                            <div key={idx} className="share-item">
+                              <span>{name}:</span>
+                              <span className="balance-positive">
+                                ${parseFloat(shares[idx] || 0).toFixed(2)}
+                              </span>
+                            </div>
                           );
                         })}
                       </div>
                     </details>
                   )}
+                  
                   {meal.creator_name && (
-                    <p style={{ fontSize: '0.8em', color: '#666', marginTop: '8px' }}>
+                    <div className="meal-creator">
                       Added by: {meal.creator_name}
-                    </p>
+                    </div>
                   )}
                 </div>
+                
                 {isCreator && (
-                  <button 
-                    onClick={() => deleteMeal(meal.id)}
-                    style={{ background: '#ef4444', padding: '5px 10px' }}
-                  >
-                    Delete
-                  </button>
+                  <div className="meal-actions">
+                    <button 
+                      onClick={() => deleteMeal(meal.id)}
+                      className="delete-meal-btn"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 )}
               </div>
-            </div>
-          );
-        })
+            );
+          })}
+        </div>
       )}
     </div>
   );
