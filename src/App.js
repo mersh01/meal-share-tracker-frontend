@@ -10,6 +10,7 @@ import SettlementList from './components/SettlementList';
 import MealHistory from './components/MealHistory';
 import api from './services/api';
 import ChangePassword from './components/ChangePassword';
+import ProfileSettings from './components/ProfileSettings'; // Add this import
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -20,6 +21,7 @@ function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [friends, setFriends] = useState([]);
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false); // Add this state
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
@@ -65,6 +67,11 @@ function App() {
     setActiveTab('add');
   };
 
+  const handleProfileUpdate = (updatedUser) => {
+    setUser(updatedUser);
+    refreshData();
+  };
+
   const tabs = [
     { id: 'add', label: 'Add Meal', icon: '➕' },
     { id: 'balance', label: 'Balances', icon: '💰' },
@@ -80,57 +87,61 @@ function App() {
   return (
     <div className="app">
       {/* Mobile Menu Overlay */}
-
-{/* Mobile Menu Overlay */}
-{isMobileMenuOpen && (
-  <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
-    <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
-      <div className="mobile-menu-header">
-        <h3>Menu</h3>
-        <button className="close-menu" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
-      </div>
-      <div className="mobile-menu-user">
-        <div className="mobile-user-avatar">👤</div>
-        <div className="mobile-user-info">
-          <div className="mobile-user-name">{user?.name}</div>
-          <div className="mobile-user-email">{user?.email}</div>
-        </div>
-      </div>
-      
-      {/* Add Navigation Tabs for Mobile */}
-      {selectedGroupId && (
-        <div className="mobile-nav-section">
-          <div className="mobile-nav-title">Navigation</div>
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              className={`mobile-nav-item ${activeTab === tab.id ? 'active' : ''}`}
-              onClick={() => {
-                setActiveTab(tab.id);
+      {isMobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <h3>Menu</h3>
+              <button className="close-menu" onClick={() => setIsMobileMenuOpen(false)}>✕</button>
+            </div>
+            <div className="mobile-menu-user">
+              <div className="mobile-user-avatar">👤</div>
+              <div className="mobile-user-info">
+                <div className="mobile-user-name">{user?.name}</div>
+                <div className="mobile-user-email">{user?.email}</div>
+              </div>
+            </div>
+            
+            {/* Add Navigation Tabs for Mobile */}
+            {selectedGroupId && (
+              <div className="mobile-nav-section">
+                <div className="mobile-nav-title">Navigation</div>
+                {tabs.map(tab => (
+                  <button
+                    key={tab.id}
+                    className={`mobile-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    <span className="mobile-nav-icon">{tab.icon}</span>
+                    <span className="mobile-nav-label">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            <div className="mobile-menu-items">
+              <button onClick={() => {
+                setShowProfileSettings(true);
                 setIsMobileMenuOpen(false);
-              }}
-            >
-              <span className="mobile-nav-icon">{tab.icon}</span>
-                  <span className="mobile-nav-label">{tab.label}</span>
-            </button>
-          ))}
+              }} className="mobile-menu-item">
+                👤 Edit Profile
+              </button>
+              <button onClick={() => {
+                setShowChangePassword(true);
+                setIsMobileMenuOpen(false);
+              }} className="mobile-menu-item">
+                🔒 Change Password
+              </button>
+              <button onClick={handleLogout} className="mobile-menu-item logout">
+                🚪 Logout
+              </button>
+            </div>
+          </div>
         </div>
       )}
-      
-      <div className="mobile-menu-items">
-        <button onClick={() => {
-          setShowChangePassword(true);
-          setIsMobileMenuOpen(false);
-        }} className="mobile-menu-item">
-          🔒 Change Password
-        </button>
-        <button onClick={handleLogout} className="mobile-menu-item logout">
-          🚪 Logout
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
       {/* Header */}
       <header className="header">
@@ -143,6 +154,9 @@ function App() {
             <p>Track meals with friends, split bills easily</p>
           </div>
           <div className="header-actions">
+            <button className="change-password-btn" onClick={() => setShowProfileSettings(true)} title="Edit Profile">
+              👤
+            </button>
             <button className="change-password-btn" onClick={() => setShowChangePassword(true)} title="Change Password">
               🔒
             </button>
@@ -269,6 +283,15 @@ function App() {
           onPasswordChanged={() => {
             console.log('Password changed successfully');
           }}
+        />
+      )}
+
+      {/* Profile Settings Modal */}
+      {showProfileSettings && (
+        <ProfileSettings 
+          user={user}
+          onClose={() => setShowProfileSettings(false)}
+          onProfileUpdate={handleProfileUpdate}
         />
       )}
     </div>

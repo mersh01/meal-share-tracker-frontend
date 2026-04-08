@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 
-function MealHistory({ groupId, refreshTrigger, onDelete }) {
+function MealHistory({ groupId, refreshTrigger }) {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
@@ -46,19 +46,6 @@ function MealHistory({ groupId, refreshTrigger, onDelete }) {
     }
   };
 
-  const deleteMeal = async (id) => {
-    if (window.confirm('Are you sure you want to delete this meal? This will remove all associated expenses and cannot be undone.')) {
-      try {
-        await api.deleteMeal(id);
-        alert('Meal deleted successfully!');
-        onDelete();
-        loadMeals();
-      } catch (error) {
-        console.error('Error deleting meal:', error);
-        alert(error.response?.data?.error || 'Error deleting meal');
-      }
-    }
-  };
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -152,16 +139,7 @@ function MealHistory({ groupId, refreshTrigger, onDelete }) {
                   )}
                 </div>
                 
-                {isCreator && (
-                  <div className="meal-actions">
-                    <button 
-                      onClick={() => deleteMeal(meal.id)}
-                      className="delete-meal-btn"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
+              
               </div>
             );
           })}

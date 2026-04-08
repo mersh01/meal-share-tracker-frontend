@@ -65,14 +65,15 @@ getGroupMembers: async (groupId) => {
   return data; // Returns { members: [], isOwner: boolean, ownerId: number }
 },
 // Add this to your api object
-updateProfile: async (phone, account_number) => {
+// Add this to your api object
+updateProfile: async (name, phone, account_number) => {
   const response = await fetch(`${API_BASE_URL}/auth/profile`, {
     method: 'PUT',
     headers: { 
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${getToken()}`
     },
-    body: JSON.stringify({ phone, account_number })
+    body: JSON.stringify({ name, phone, account_number })
   });
   if (!response.ok) {
     const error = await response.json();
@@ -80,6 +81,8 @@ updateProfile: async (phone, account_number) => {
   }
   return response.json();
 },
+
+
   addGroupMember: async (groupId, email) => {
     const response = await fetch(`${API_BASE_URL}/groups/${groupId}/members`, {
       method: 'POST',
