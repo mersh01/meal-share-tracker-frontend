@@ -1188,6 +1188,7 @@ button:disabled {
   transition: width 0.3s ease;
   overflow: hidden;
   flex-shrink: 0;
+  position: fixed;
   height: fit-content;
 }
 
