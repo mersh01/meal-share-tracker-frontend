@@ -1170,14 +1170,14 @@ button:disabled {
   }
 }
 
-/* Dashboard Layout with Sidebar */
 .dashboard-layout {
   display: flex;
   gap: 20px;
   min-height: calc(100vh - 150px);
+  position: relative;
 }
 
-/* Sidebar Styles */
+/* Sidebar Styles - Fixed positioning */
 .sidebar {
   width: 260px;
   background: white;
@@ -1186,16 +1186,16 @@ button:disabled {
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
-  overflow: hidden;
+  overflow-y: auto;
   flex-shrink: 0;
-  position: fixed;
+  position: sticky;
+  top: 20px;
   height: fit-content;
+  max-height: calc(100vh - 40px);
 }
 
 .sidebar.collapsed {
   width: 70px;
-  position: fixed;
-  height: fit-content;
 }
 
 .sidebar-header {
