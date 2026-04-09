@@ -1188,11 +1188,13 @@ button:disabled {
   transition: width 0.3s ease;
   overflow: hidden;
   flex-shrink: 0;
+  height: fit-content;
 }
 
 .sidebar.collapsed {
   width: 70px;
   position: fixed;
+  height: fit-content;
 }
 
 .sidebar-header {
