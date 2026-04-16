@@ -80,45 +80,50 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
     }
   };
 
-  const handleManualPayment = async () => {
-    if (!manualPayment.to_user_id || !manualPayment.amount || manualPayment.amount <= 0) {
-      alert('Please select a recipient and enter a valid amount');
-      return;
-    }
+ const handleManualPayment = async () => {
+  if (!manualPayment.to_user_id || !manualPayment.amount || manualPayment.amount <= 0) {
+    alert('Please select a recipient and enter a valid amount');
+    return;
+  }
 
-    setProcessingPayment(true);
+  setProcessingPayment(true);
 
-    try {
-      const selectedUser = balances.find(b => b.id === parseInt(manualPayment.to_user_id));
-      
-      await api.addSettlement({
-        from_friend_id: parseInt(manualPayment.to_user_id), // The person receiving payment? Wait, let me clarify
-        to_friend_id: parseInt(manualPayment.to_user_id),
-        amount: parseFloat(manualPayment.amount),
-        date: settlementDate,
-        group_id: groupId,
-        description: manualPayment.description || 'Manual payment'
-      });
-      
-      alert(`✓ Manual payment recorded: You paid ${selectedUser?.name} $${parseFloat(manualPayment.amount).toFixed(2)}\n\nWaiting for confirmation.`);
-      
-      setManualPayment({
-        to_user_id: '',
-        amount: '',
-        description: ''
-      });
-      setShowManualPayment(false);
-      
-      await loadBalances();
-      onSettlementMade();
-      
-    } catch (error) {
-      console.error('Error recording manual payment:', error);
-      alert(error.response?.data?.error || 'Error recording manual payment');
-    } finally {
-      setProcessingPayment(false);
-    }
-  };
+  try {
+    // Get current user from localStorage
+    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const selectedUser = balances.find(b => b.id === parseInt(manualPayment.to_user_id));
+    
+    console.log('Current user:', currentUser);
+    console.log('Selected user:', selectedUser);
+    
+    await api.addSettlement({
+      from_friend_id: currentUser.id,  // YOU are the payer (current user)
+      to_friend_id: parseInt(manualPayment.to_user_id),  // The person you paid
+      amount: parseFloat(manualPayment.amount),
+      date: settlementDate,
+      group_id: groupId,
+      description: manualPayment.description || 'Manual payment'
+    });
+    
+    alert(`✓ Manual payment recorded: You paid ${selectedUser?.name} $${parseFloat(manualPayment.amount).toFixed(2)}\n\nWaiting for confirmation.`);
+    
+    setManualPayment({
+      to_user_id: '',
+      amount: '',
+      description: ''
+    });
+    setShowManualPayment(false);
+    
+    await loadBalances();
+    onSettlementMade();
+    
+  } catch (error) {
+    console.error('Error recording manual payment:', error);
+    alert(error.response?.data?.error || 'Error recording manual payment');
+  } finally {
+    setProcessingPayment(false);
+  }
+};
 
   if (loading) {
     return <div>Loading balances...</div>;
