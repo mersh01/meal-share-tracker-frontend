@@ -7,7 +7,13 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
   const [pendingSettlements, setPendingSettlements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSettlement, setShowSettlement] = useState(false);
+  const [showManualPayment, setShowManualPayment] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [manualPayment, setManualPayment] = useState({
+    to_user_id: '',
+    amount: '',
+    description: ''
+  });
   const [settlementDate, setSettlementDate] = useState(new Date().toISOString().split('T')[0]);
   const [processingPayment, setProcessingPayment] = useState(false);
   const [copiedField, setCopiedField] = useState(null);
@@ -54,7 +60,8 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
         to_friend_id: payment.to,
         amount: payment.amount,
         date: settlementDate,
-        group_id: groupId
+        group_id: groupId,
+        description: payment.description || 'Settlement payment'
       });
       
       alert(`✓ Payment recorded: ${payment.from_name} paid ${payment.to_name} $${payment.amount.toFixed(2)}\n\nWaiting for ${payment.to_name} to confirm receipt.`);
@@ -73,6 +80,46 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
     }
   };
 
+  const handleManualPayment = async () => {
+    if (!manualPayment.to_user_id || !manualPayment.amount || manualPayment.amount <= 0) {
+      alert('Please select a recipient and enter a valid amount');
+      return;
+    }
+
+    setProcessingPayment(true);
+
+    try {
+      const selectedUser = balances.find(b => b.id === parseInt(manualPayment.to_user_id));
+      
+      await api.addSettlement({
+        from_friend_id: parseInt(manualPayment.to_user_id), // The person receiving payment? Wait, let me clarify
+        to_friend_id: parseInt(manualPayment.to_user_id),
+        amount: parseFloat(manualPayment.amount),
+        date: settlementDate,
+        group_id: groupId,
+        description: manualPayment.description || 'Manual payment'
+      });
+      
+      alert(`✓ Manual payment recorded: You paid ${selectedUser?.name} $${parseFloat(manualPayment.amount).toFixed(2)}\n\nWaiting for confirmation.`);
+      
+      setManualPayment({
+        to_user_id: '',
+        amount: '',
+        description: ''
+      });
+      setShowManualPayment(false);
+      
+      await loadBalances();
+      onSettlementMade();
+      
+    } catch (error) {
+      console.error('Error recording manual payment:', error);
+      alert(error.response?.data?.error || 'Error recording manual payment');
+    } finally {
+      setProcessingPayment(false);
+    }
+  };
+
   if (loading) {
     return <div>Loading balances...</div>;
   }
@@ -83,7 +130,15 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
 
   return (
     <div>
-      <h2>Current Balances</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+        <h2>Current Balances</h2>
+        <button 
+          onClick={() => setShowManualPayment(true)} 
+          style={{ background: '#3b82f6', padding: '8px 16px', fontSize: '0.9rem' }}
+        >
+          💸 Record Manual Payment
+        </button>
+      </div>
       
       <div className="card">
         <h3>Net Balances</h3>
@@ -177,7 +232,6 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                 flexDirection: 'column',
                 gap: '12px'
               }}>
-                {/* Header with amount and button */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between', 
@@ -210,7 +264,6 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                   </button>
                 </div>
                 
-                {/* Contact Information Section - Mobile Responsive */}
                 {(payment.to_phone || payment.to_account) && (
                   <div style={{ 
                     marginTop: '8px', 
@@ -295,7 +348,6 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                           </button>
                         </div>
                       )}
-                     
                     </div>
                   </div>
                 )}
@@ -312,6 +364,7 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
         )
       )}
 
+      {/* Regular Settlement Modal */}
       {showSettlement && selectedPayment && (
         <div className="card" style={{ background: '#fff3cd', border: '2px solid #ffc107' }}>
           <h3>Confirm Payment</h3>
@@ -322,7 +375,6 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
             Amount: ${selectedPayment.amount.toFixed(2)}
           </p>
           
-          {/* Show receiver info in confirmation modal - Mobile Responsive */}
           {(selectedPayment.to_phone || selectedPayment.to_account) && (
             <div style={{ 
               marginTop: '15px', 
@@ -350,7 +402,6 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
                     🏦 Account: {selectedPayment.to_account}
                   </div>
                 )}
-                
               </div>
             </div>
           )}
@@ -385,6 +436,85 @@ function BalanceView({ groupId, refreshTrigger, onSettlementMade }) {
           <p style={{ fontSize: '0.8em', color: '#666', marginTop: '10px' }}>
             After confirming, {selectedPayment.to_name} will need to confirm receipt in the Settlements tab
           </p>
+        </div>
+      )}
+
+      {/* Manual Payment Modal */}
+      {showManualPayment && (
+        <div className="modal" onClick={() => setShowManualPayment(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ marginBottom: '20px' }}>Record Manual Payment</h2>
+            <p style={{ fontSize: '0.9em', color: '#666', marginBottom: '20px' }}>
+              Use this to record payments made outside the system or to correct mistakes.
+            </p>
+            
+            <div className="form-group">
+              <label>Select Person You Paid</label>
+              <select
+                value={manualPayment.to_user_id}
+                onChange={(e) => setManualPayment({ ...manualPayment, to_user_id: e.target.value })}
+                required
+              >
+                <option value="">Select a person</option>
+                {balances.filter(p => p.id !== balances.find(b => b.name === 'You')?.id).map(person => (
+                  <option key={person.id} value={person.id}>
+                    {person.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="form-group">
+              <label>Amount Paid ($)</label>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Enter amount"
+                value={manualPayment.amount}
+                onChange={(e) => setManualPayment({ ...manualPayment, amount: e.target.value })}
+                required
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Description (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g., Cash payment, Bank transfer, etc."
+                value={manualPayment.description}
+                onChange={(e) => setManualPayment({ ...manualPayment, description: e.target.value })}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label>Payment Date</label>
+              <input
+                type="date"
+                value={settlementDate}
+                onChange={(e) => setSettlementDate(e.target.value)}
+              />
+            </div>
+            
+            <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
+              <button 
+                onClick={handleManualPayment}
+                disabled={processingPayment}
+                style={{ background: '#10b981', flex: 1 }}
+              >
+                {processingPayment ? 'Recording...' : 'Record Payment'}
+              </button>
+              <button 
+                onClick={() => setShowManualPayment(false)} 
+                style={{ background: '#6c757d', flex: 1 }}
+              >
+                Cancel
+              </button>
+            </div>
+            
+            <p style={{ fontSize: '0.8em', color: '#666', marginTop: '15px', textAlign: 'center' }}>
+              This will create a pending payment that needs confirmation from the receiver.
+            </p>
+          </div>
         </div>
       )}
     </div>
